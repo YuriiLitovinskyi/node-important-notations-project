@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %> 
+
+<body>
+    <h1>Take your notes</h1>
+
+    <%- include('./partials/nav.ejs') %> 
+
+    <% if(sections.length > 0) { %>
+        <% sections.forEach(section => { %>
+            <h3 class="title"><%= section.title %></h3>
+            <p class="about"><%= section.about %></p>
+        <% }) %>
+    <% } else { %>
+        <h4>There aren't any sections yet</h4>
+    <% } %>
+
+    <%- include('./partials/footer.ejs') %>
+    
+</body>
+</html>
