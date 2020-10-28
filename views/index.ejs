@@ -9,8 +9,10 @@
 
     <% if(sections.length > 0) { %>
         <% sections.forEach(section => { %>
-            <h3 class="title"><%= section.title %></h3>
-            <p class="about"><%= section.about %></p>
+            <a class="single-section" href="/sections/<%= section._id %>">
+                <h3 class="title"><%= section.title %></h3>
+                <p class="about"><%= section.about %></p>
+            </a>
         <% }) %>
     <% } else { %>
         <h4>There aren't any sections yet</h4>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %> 
+
+<body>  
+
+    <%- include('./partials/nav.ejs') %> 
+
+    <div>
+        <h2>Section: <%= section.title %></h2>
+        <p><%= section.about %></p>
+        <a class="delete-section" data-doc="<%= section._id %>">Delete Section</a>
+    </div>
+
+    <div>
+        <h3>Questions</h3>
+        <% if(section.subSections.length > 0) { %>
+            <% section.subSections.forEach(subSection => { %>        
+                <h3 class="question"><%= subSection.question %></h3>
+                <p class="answer"><%= subSection.answer %></p>  
+                <p class="screen"><%= subSection.screen %></p> 
+                <a class="delete-question" data-docQuestion="<%= { subSectionId: subSection._id, sectionId: section._id } %>">Delete Question</a>      
+            <% }) %>
+        <% } else { %>
+            <h4>There aren't any questions in current section yet</h4>
+        <% } %>
+    </div>
+    <div>
+        <h3>Add new question:</h3>
+        <div class="create-subSection">
+            <form action="/subSections/<%= section._id %>" method="POST">
+              <label for="question">Question:</label>
+              <input type="text" id="question" name="question" required>
+              <label for="answer">Answer:</label>
+              <textarea type="text" id="answer" name="answer" required></textarea> 
+              <label for="screen">Screen:</label>
+              <input type="text" id="screen" name="screen">  
+              <button>Save</button>
+            </form>
+        </div>
+    </div>
+
+
+    <%- include('./partials/footer.ejs') %>
+    
+    <script>
+        const deleteSection = document.querySelector('.delete-section');
+        deleteSection.addEventListener('click', async (e) => {
+            const endpoint = `/sections/${deleteSection.dataset.doc}`;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'DELETE'
+                });
+
+                const resData = await res.json();
+
+                window.location.href = resData.redirect;
+                
+            } catch (err) {
+                console.log(err);
+            };
+        });
+
+        const deleteQuestion = document.querySelector('.delete-question');
+        deleteSection.addEventListener('click', async (e) => {
+            const endpoint = `subSections/${deleteQuestion.dataset.docQuestion.sectionId}/${deleteQuestion.dataset.docQuestion.subSectionId}`;
+
+            try {
+
+                const res = await fetch(endpoint, {
+                    method: 'DELETE'
+                });
+                
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    </script>
+</body>
+</html>

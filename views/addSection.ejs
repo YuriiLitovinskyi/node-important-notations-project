@@ -6,6 +6,16 @@
    
     <%- include('./partials/nav.ejs') %> 
 
+    <div class="create-section">
+        <form action="/sections" method="POST">
+          <label for="title">Section title:</label>
+          <input type="text" id="title" name="title" required>
+          <label for="about">About Section:</label>
+          <textarea type="text" id="about" name="about" required></textarea>      
+          <button>Submit</button>
+        </form>
+    </div>
+
     <%- include('./partials/footer.ejs') %>
     
 </body>

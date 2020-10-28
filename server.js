@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 
 const connectDB = require('./config/db');
+const Section = require('./models/section');
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -16,6 +17,7 @@ app.set('view engine', 'ejs');
 
 // middleware & static files
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));  // for accepting form data
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -23,23 +25,121 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/add-section', async (req, res) => {
+    try {
+        const section = new Section({
+            title: 'New section2',
+            about: 'About new section2'
+        });
+    
+        const result = await section.save();
+
+        res.send(result);
+        
+    } catch (err) {
+        console.log(err);
+    };
+});
+
 app.get('/', (req, res) => {
-    //res.sendFile('./views/index.html', { root: __dirname });
-    const sections = [
-        { title: 'Dunay PRO', about: 'All You need to remember about Dunay PRO', subSections: [ { question: 'How to remove all alarms', answer: 'Connect to DB via ibExpert...', screen: null }, { question: 'Delete Sabotaj', answer: 'Connect to DB via ibExpert...', screen: null } ] },
-        { title: 'Dunay XXI', about: 'All You need to remember about Dunay XXI', subSections: [ { question: 'test1', answer: 'qnsw text1...', screen: null } ] },
-        { title: 'CASL Cloud', about: 'All You need to remember about CASL', subSections: [ { question: 'test2s', answer: 'answ test2...', screen: null } ] }
-    ];
-    res.render('index', { title: 'Main', sections });
+   res.redirect('/sections');
 });
 
 app.get('/about', (req, res) => {
     res.render('about', { title: 'About' });
 });
 
+// sections routes
+app.get('/sections', async (req, res) => {
+    try {
+        const allSections = await Section.find().sort({ updatedAt: -1 });
+
+        res.render('index', { title: 'All Sections', sections: allSections });
+        
+    } catch (err) {
+        console.log(err);
+    };
+});
+
+app.post('/sections', async (req, res) => {
+    try {
+        const { title, about } = req.body;
+
+        const section = new Section({ title, about });
+        
+        await section.save();
+        
+        res.redirect('/sections');
+        
+    } catch (err) {
+        console.log(err);
+    };
+});
+
 app.get('/sections/add', (req, res) => {
     res.render('addSection', { title: 'Add Section' });
 });
+
+app.get('/sections/:id', async (req, res) => {    
+    try {
+        const _id = req.params.id;
+
+        const section = await Section.findById(_id);
+
+        res.render('sectionDetails', { title: 'Single section', section });
+        
+    } catch (err) {
+        console.log(err);
+    };
+});
+
+app.delete('/sections/:id', async (req, res) => {
+    try {
+        const _id = req.params.id;
+
+        await Section.findByIdAndDelete(_id);
+
+        res.json({ redirect: '/sections' });
+        
+    } catch (err) {
+        console.log(err);
+    };
+});
+
+app.post('/subsections/:sectionId', async (req, res) => {
+    try {
+        const _id = req.params.sectionId;
+        const { question, answer, screen } = req.body;
+
+        const section = await Section.findById(_id);
+
+        if(!section){
+            res.redirect('/sections');
+        };
+
+        section.subSections.unshift({ question, answer, screen });
+        await section.save();
+
+        res.render('sectionDetails', { title: 'Single section', section });
+
+    } catch (err) {
+        console.log(err);
+    };
+});
+
+app.delete('/subsections/:sectionId/:subSectionId', async (req, res) => {
+    try {
+        const sectionId = req.params.sectionId;
+        const subSectionId = req.params.subSectionId;
+
+        //await Section.findOne()
+        console.log('test');
+
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 
 // 404 page
 app.use((req, res) => {
