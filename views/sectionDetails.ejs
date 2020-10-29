@@ -19,7 +19,8 @@
                 <h3 class="question"><%= subSection.question %></h3>
                 <p class="answer"><%= subSection.answer %></p>  
                 <p class="screen"><%= subSection.screen %></p> 
-                <a class="delete-question" data-docQuestion="<%= { subSectionId: subSection._id, sectionId: section._id } %>">Delete Question</a>      
+                <a id="<%= section._id + '&' + subSection._id %>" onClick="onDeleteSubSection(this.id)" class="delete-question">Delete Question</a>
+                <a id="<%= section._id + '&' + subSection._id %>" onClick="onModifySubSection(this.id)" class="modify-question">Modify Question</a>     
             <% }) %>
         <% } else { %>
             <h4>There aren't any questions in current section yet</h4>
@@ -39,7 +40,6 @@
             </form>
         </div>
     </div>
-
 
     <%- include('./partials/footer.ejs') %>
     
@@ -62,20 +62,46 @@
             };
         });
 
-        const deleteQuestion = document.querySelector('.delete-question');
-        deleteSection.addEventListener('click', async (e) => {
-            const endpoint = `subSections/${deleteQuestion.dataset.docQuestion.sectionId}/${deleteQuestion.dataset.docQuestion.subSectionId}`;
+        async function onDeleteSubSection(combinedId){      
+            const endpoint = `/subsections?sectionId=${combinedId.split('&')[0]}&subSectionId=${combinedId.split('&')[1]}`;           
 
             try {
-
                 const res = await fetch(endpoint, {
-                    method: 'DELETE'
+                    method: 'DELETE'           
+                });
+
+                const resData = await res.json();
+
+                if(resData.msg === 'ok'){                                 
+                    location.reload();
+                    return false;
+                };
+                
+            } catch (err) {
+                console.log(err);
+            };
+        };
+        
+        async function onModifySubSection(combinedId){
+            const endpoint = `/subsections?sectionId=${combinedId.split('&')[0]}&subSectionId=${combinedId.split('&')[1]}`;
+
+            const formData = new FormData();
+            formData.append('question', 'test question');
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: 'test question', answer: 'test answer', screen: 'test screen' })
                 });
                 
             } catch (err) {
                 console.log(err);
-            }
-        });
+            };
+
+        };
     </script>
 </body>
 </html>

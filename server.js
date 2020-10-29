@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 // middleware & static files
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));  // for accepting form data
-app.use(express.json());
+app.use(express.json({ type: ['application/json', 'text/plain'] }));
 
 app.use((req, res, next) => {
     console.log(`Request made! Host: ${req.hostname}, Path: ${req.path}, Method: ${req.method}`);
@@ -119,25 +119,49 @@ app.post('/subsections/:sectionId', async (req, res) => {
 
         section.subSections.unshift({ question, answer, screen });
         await section.save();
-
-        res.render('sectionDetails', { title: 'Single section', section });
+    
+        res.redirect(`/sections/${_id}`);
 
     } catch (err) {
         console.log(err);
     };
 });
 
-app.delete('/subsections/:sectionId/:subSectionId', async (req, res) => {
+app.delete('/subsections', async (req, res) => {
     try {
-        const sectionId = req.params.sectionId;
-        const subSectionId = req.params.subSectionId;
+        const sectionId = req.query.sectionId;
+        const subSectionId = req.query.subSectionId;
 
-        //await Section.findOne()
-        console.log('test');
+        const section = await Section.findById(sectionId);
+
+        section.subSections = section.subSections.filter(subSection => subSection._id != subSectionId);
+        await section.save();
+
+        res.json({ msg: 'ok' });  
 
     } catch (err) {
         console.log(err);
-    }
+    };
+});
+
+app.put('/subsections', async (req, res) => {
+    try {
+        const sectionId = req.query.sectionId;
+        const subSectionId = req.query.subSectionId;
+        const { question, answer, screen } = req.body;
+        console.log(req.body);
+
+        const section = await Section.findById(sectionId);
+
+        // section.subSections = section.subSections.filter(subSection => subSection._id != subSectionId);
+        // section.subSections.unshift({ question, answer, screen });
+        // await section.save();
+
+        res.json({ msg: 'ok' });  
+
+    } catch (err) {
+        console.log(err);
+    };
 });
 
 
