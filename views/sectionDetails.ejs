@@ -20,7 +20,17 @@
                 <p class="answer"><%= subSection.answer %></p>  
                 <p class="screen"><%= subSection.screen %></p> 
                 <a id="<%= section._id + '&' + subSection._id %>" onClick="onDeleteSubSection(this.id)" class="delete-question">Delete Question</a>
-                <a id="<%= section._id + '&' + subSection._id %>" onClick="onModifySubSection(this.id)" class="modify-question">Modify Question</a>     
+                <a 
+                    id="<%= subSection._id %>" 
+                    onClick="onModifySubSection(this.id)" 
+                    class="modify-question"
+                    data-section="<%= section._id  %>"
+                    data-question="<%= subSection.question %>"
+                    data-answer="<%= subSection.answer %>"
+                    data-screen="<%= subSection.screen %>"
+                    >
+                    Modify Question
+                </a>     
             <% }) %>
         <% } else { %>
             <h4>There aren't any questions in current section yet</h4>
@@ -82,11 +92,50 @@
             };
         };
         
-        async function onModifySubSection(combinedId){
-            const endpoint = `/subsections?sectionId=${combinedId.split('&')[0]}&subSectionId=${combinedId.split('&')[1]}`;
+        async function onModifySubSection(subSection){
+            const modifyQuestion = document.getElementById(subSection);
+            
+            const sectionId = modifyQuestion.dataset.section;
+            const question = modifyQuestion.dataset.question;
+            const answer = modifyQuestion.dataset.answer;
+            const screen = modifyQuestion.dataset.screen;   
+            
+            // Create input fields
+            const modifyDiv = document.createElement('div');
+            modifyDiv.classList.add('modifyDivQuestion');
+
+            const inputQuestion = document.createElement('input');   
+            inputQuestion.value = question;
+            modifyDiv.appendChild(inputQuestion);
+
+            const inputAnswer = document.createElement('input');
+            inputAnswer.value = answer;
+            modifyDiv.appendChild(inputAnswer);
+
+            const inputScreen = document.createElement('input');
+            inputScreen.value = screen;
+            modifyDiv.appendChild(inputScreen);
+
+            const saveChanges = document.createElement('a');
+            saveChanges.appendChild(document.createTextNode('Save changes'));
+            modifyDiv.appendChild(saveChanges);
+
+            const cancelChanges = document.createElement('a');
+            cancelChanges.appendChild(document.createTextNode('Cancel'));
+            modifyDiv.appendChild(cancelChanges);
+
+
+
+            modifyQuestion.parentNode.insertBefore(modifyDiv, modifyQuestion.nextSibling);
+
+            modifyQuestion.style.display = 'none';
+
+
+
+            const endpoint = `/subsections?sectionId=${sectionId}&subSectionId=${subSection}`;
 
             const formData = new FormData();
-            formData.append('question', 'test question');
+            formData.append('question', 'test question');         
 
             try {
                 const res = await fetch(endpoint, {
@@ -94,7 +143,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ question: 'test question', answer: 'test answer', screen: 'test screen' })
+                    body: JSON.stringify({ question, answer, screen })
                 });
                 
             } catch (err) {

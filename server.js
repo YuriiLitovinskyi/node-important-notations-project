@@ -150,8 +150,9 @@ app.put('/subsections', async (req, res) => {
         const subSectionId = req.query.subSectionId;
         const { question, answer, screen } = req.body;
         console.log(req.body);
+        console.log(req.query);
 
-        const section = await Section.findById(sectionId);
+        //const section = await Section.findById(sectionId);
 
         // section.subSections = section.subSections.filter(subSection => subSection._id != subSectionId);
         // section.subSections.unshift({ question, answer, screen });
