@@ -118,37 +118,57 @@
 
             const saveChanges = document.createElement('a');
             saveChanges.appendChild(document.createTextNode('Save changes'));
+            saveChanges.classList.add('modifyQuestionBtn');
             modifyDiv.appendChild(saveChanges);
 
             const cancelChanges = document.createElement('a');
             cancelChanges.appendChild(document.createTextNode('Cancel'));
+            cancelChanges.classList.add('cancelModifyQuestionBtn');
             modifyDiv.appendChild(cancelChanges);
-
-
 
             modifyQuestion.parentNode.insertBefore(modifyDiv, modifyQuestion.nextSibling);
 
             modifyQuestion.style.display = 'none';
 
+            // send modify        
+            saveChanges.addEventListener('click', async (e) => {
+                console.log(e);
+                const endpoint = `/subsections?sectionId=${sectionId}&subSectionId=${subSection}`;
+
+                const formData = new FormData();
+                formData.append('question', 'test question');         
+
+                try {
+                    const res = await fetch(endpoint, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ question, answer, screen })
+                    });
+
+                    modifyDiv.style.display = 'none';
+                    modifyQuestion.style.display = 'block';
+
+                    const resData = await res.json();
+                    console.log(resData);
+                    
+                } catch (err) {
+                    console.log(err);
+                };
+            });  
+
+            cancelChanges.addEventListener('click', (e) => {
+                modifyDiv.style.display = 'none';
+                modifyQuestion.style.display = 'block';
+            });      
+
+        };
 
 
-            const endpoint = `/subsections?sectionId=${sectionId}&subSectionId=${subSection}`;
-
-            const formData = new FormData();
-            formData.append('question', 'test question');         
-
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ question, answer, screen })
-                });
-                
-            } catch (err) {
-                console.log(err);
-            };
+        
+       
+        async function sendModify(){
 
         };
     </script>
