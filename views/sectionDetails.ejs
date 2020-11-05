@@ -96,24 +96,24 @@
             const modifyQuestion = document.getElementById(subSection);
             
             const sectionId = modifyQuestion.dataset.section;
-            const question = modifyQuestion.dataset.question;
-            const answer = modifyQuestion.dataset.answer;
-            const screen = modifyQuestion.dataset.screen;   
+            let question = modifyQuestion.dataset.question;
+            let answer = modifyQuestion.dataset.answer;
+            let screen = modifyQuestion.dataset.screen;   
             
             // Create input fields
             const modifyDiv = document.createElement('div');
             modifyDiv.classList.add('modifyDivQuestion');
 
             const inputQuestion = document.createElement('input');   
-            inputQuestion.value = question;
+            inputQuestion.value = question;           
             modifyDiv.appendChild(inputQuestion);
 
             const inputAnswer = document.createElement('input');
-            inputAnswer.value = answer;
+            inputAnswer.value = answer;          
             modifyDiv.appendChild(inputAnswer);
 
             const inputScreen = document.createElement('input');
-            inputScreen.value = screen;
+            inputScreen.value = screen;          
             modifyDiv.appendChild(inputScreen);
 
             const saveChanges = document.createElement('a');
@@ -129,6 +129,18 @@
             modifyQuestion.parentNode.insertBefore(modifyDiv, modifyQuestion.nextSibling);
 
             modifyQuestion.style.display = 'none';
+
+            inputQuestion.addEventListener('change', function () {               
+                question = this.value;
+            });
+
+            inputAnswer.addEventListener('change', function () {               
+                answer = this.value;
+            });
+
+            inputScreen.addEventListener('change', function () {               
+                screen = this.value;
+            });
 
             // send modify        
             saveChanges.addEventListener('click', async (e) => {
@@ -150,8 +162,12 @@
                     modifyDiv.style.display = 'none';
                     modifyQuestion.style.display = 'block';
 
-                    const resData = await res.json();
-                    console.log(resData);
+                    const resData = await res.json();                   
+
+                    if(resData.msg === 'ok'){                                 
+                        location.reload();
+                        return false;
+                    };
                     
                 } catch (err) {
                     console.log(err);
@@ -161,16 +177,9 @@
             cancelChanges.addEventListener('click', (e) => {
                 modifyDiv.style.display = 'none';
                 modifyQuestion.style.display = 'block';
-            });      
-
+            });     
         };
 
-
-        
-       
-        async function sendModify(){
-
-        };
     </script>
 </body>
 </html>

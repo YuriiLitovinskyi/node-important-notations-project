@@ -148,74 +148,20 @@ app.put('/subsections', async (req, res) => {
     try {
         const sectionId = req.query.sectionId;
         const subSectionId = req.query.subSectionId;
-        const { question, answer, screen } = req.body;
-        // console.log(req.body);
-        // console.log(req.query);
 
         const section = await Section.findById(sectionId);
 
         if(!section){
             res.json({ msg: 'section not found' });
-        };
-
-        // let subSection = section.subSections.find(subSection => subSection._id == subSectionId);
-
-        // if(!subSection){
-        //     res.json({ msg: 'subSection not found' });
-        // };
-
-        // subSection.set(req.body);
-
-        // await section.save();
-
-        // console.log(section);
-
-        // const subSection = section.subSections.id(subSectionId);
-
-        // if(!subSection){
-        //     res.json({ msg: 'subSection not found' });
-        // };
-
-        // //subSection.set(req.body);
-        // subSection.question = question;
-        // subSection.answer = answer;
-        // subSection.screen = screen;
-
-        // await section.save();
-
-        // console.log(subSection);
-
-        
-
-        // let subSection = section.subSections.find(subSection => subSection._id == subSectionId);
-        // console.log(subSection);
-        // if(!subSection){
-        //     res.json({ msg: 'subSection not found' });
-        // };
-
-        // subSection.question = question;
-        // subSection.answer = answer;
-        // subSection.screen = screen;
-        // console.log(subSection);
-
-
-        // section.subSections = section.subSections.filter(subSection => subSection._id != subSectionId);
-        // section.subSections.unshift({ question, answer, screen });
-        // await section.save();
-      
+        };      
 
         const updatedSection = await Section.findOneAndUpdate(
-            { '_id': sectionId, 'subSections._id': subSectionId  },
-            {
-                '$set': {
-                    'subSections.$': req.body
-                }
-            },
-            { upsert: true, new: true },
+            { _id: sectionId, 'subSections._id': subSectionId  },
+            { $set: { 'subSections.$': req.body } },
+            { new: true, upsert: true },
         );
 
-       console.log(updatedSection);
-
+       //console.log(updatedSection);
 
         res.json({ msg: 'ok' });  
 
